@@ -21,10 +21,12 @@ namespace Greedy
         {
             //if(e.Button = Button)
             PictureBox vertex = new PictureBox();
-            vertex.Location = new Point(e.X-10,e.Y-10);
+            vertex.Location = new Point(e.X - 10, e.Y - 10);
             vertex.SizeMode = PictureBoxSizeMode.StretchImage;
             vertex.ClientSize = new Size(20, 20);
             vertex.Image = new Bitmap(@"img\button.png");
+            
+            vertex.Click += new System.EventHandler(this.picturePoint_click); // += прекрипить к событию
             this.Controls.Add(vertex);
             vertices.Add(vertex);
         }
