@@ -16,11 +16,11 @@ namespace Greedy
         {
             InitializeComponent();
         }
-        List<PictureBox> vertices = new List<PictureBox>();
+        List<MyPictureBox> vertices = new List<MyPictureBox>();
         private void Form1_MouseClick(object sender, MouseEventArgs e)
         {
             //if(e.Button = Button)
-            PictureBox vertex = new PictureBox();
+            MyPictureBox vertex = new MyPictureBox();
             vertex.Location = new Point(e.X - 10, e.Y - 10);
             vertex.SizeMode = PictureBoxSizeMode.StretchImage;
             vertex.ClientSize = new Size(20, 20);
@@ -32,8 +32,39 @@ namespace Greedy
         }
         void picturePoint_click(object sender, EventArgs e)
         {
-            var pic = sender as PictureBox;
-            pic.Image = new Bitmap(@"img\buttonPressed.png");
+            var pic = sender as MyPictureBox;
+            if (pic.GetStatus)
+            {
+                pic.Image = new Bitmap(@"img\button.png");
+                pic.SetStatus = false;
+            }
+            else
+            {
+                MyPictureBox pb = vertices.Find(x => x.GetStatus == true);
+                if (pb != null)
+                {
+                    //Make edge
+                    //
+                    Graphics g = CreateGraphics();
+                    Pen p = new Pen(Brushes.Black);
+                    g.DrawLine(p,pb.Location.X+10, pb.Location.Y+10, pic.Location.X+10, pic.Location.Y+10);
+
+                    pb.SetStatus = false;
+                    pic.SetStatus = false;
+                    pb.Image = new Bitmap(@"img\button.png");
+                }
+                else
+                {
+                    pic.SetStatus = true;
+                    pic.Image = new Bitmap(@"img\buttonPressed.png");
+                }
+                
+            }
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }
