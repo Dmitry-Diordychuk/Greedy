@@ -10,7 +10,7 @@ namespace Greedy
     {
         int X { get; set; }
         int Y { get; set; }
-        GraphPoint(int x, int y)
+        public GraphPoint(int x, int y)
         {
             X = x;
             Y = y;

@@ -8,13 +8,13 @@ namespace Greedy
 {
     class Graph
     {
-        private List<GraphPoint> grahpPoints;
-        private List<(GraphPoint, GraphPoint)> graphEdges;
-        void AddPoint(GraphPoint p)
+        private List<GraphPoint> grahpPoints = new List<GraphPoint>();
+        private List<(GraphPoint, GraphPoint)> graphEdges = new List<(GraphPoint, GraphPoint)>();
+        public void AddPoint(GraphPoint p)
         {
             grahpPoints.Add(p);
         }
-        void AddEdge(GraphPoint p1, GraphPoint p2)
+        public void AddEdge(GraphPoint p1, GraphPoint p2, int weight)
         {
             graphEdges.Add((p1, p2));
         }
