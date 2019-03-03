@@ -8,6 +8,7 @@ namespace Greedy
 {
     class MyPictureBox : System.Windows.Forms.PictureBox
     {
+        public int number { get; set; }
         private bool status;
         public bool GetStatus
         {

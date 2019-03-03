@@ -17,9 +17,11 @@ namespace Greedy
             InitializeComponent();
         }
         Graph MyGraph = new Graph();
+        int i = 0;
         List<MyPictureBox> vertices = new List<MyPictureBox>();
         private void Form1_MouseClick(object sender, MouseEventArgs e)
         {
+            i++;
             //if(e.Button = Button)
             MyPictureBox vertex = new MyPictureBox();
             vertex.Location = new Point(e.X - 10, e.Y - 10);
@@ -30,11 +32,23 @@ namespace Greedy
             vertex.SizeMode = PictureBoxSizeMode.StretchImage;
             vertex.ClientSize = new Size(20, 20);
             vertex.Image = new Bitmap(@"img\button.png");
-            
+
             vertex.Click += new System.EventHandler(this.picturePoint_click); // += прекрипить к событию
             this.Controls.Add(vertex);
             vertices.Add(vertex);
+
+            vertex.number = i;
+            DrawNumber(vertex);
+
         }
+
+        private void DrawNumber(MyPictureBox vertex)
+        {
+            Graphics g = Graphics.FromImage(vertex.Image);
+            g.DrawString(vertex.number.ToString(), new Font("Microsoft Sans Serif", 30), Brushes.Black,
+                new Point(80, 80));
+        }
+
         void picturePoint_click(object sender, EventArgs e)
         {
             var pic = sender as MyPictureBox;
@@ -42,6 +56,7 @@ namespace Greedy
             {
                 pic.Image = new Bitmap(@"img\button.png");
                 pic.SetStatus = false;
+                DrawNumber(pic);
             }
             else
             {
@@ -71,11 +86,14 @@ namespace Greedy
                     pic.SetStatus = false;
                     pb.Image = new Bitmap(@"img\button.png");
                     MyGraph.AddEdge(new GraphPoint(pic.Location.X, pic.Location.Y), new GraphPoint(pb.Location.X, pb.Location.Y),weight);
+                    DrawNumber(pic);
+                    DrawNumber(pb);
                 }
                 else
                 {
                     pic.SetStatus = true;
                     pic.Image = new Bitmap(@"img\buttonPressed.png");
+                    DrawNumber(pic);
                 }
             }
         }
