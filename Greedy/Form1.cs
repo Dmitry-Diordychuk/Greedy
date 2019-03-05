@@ -18,31 +18,19 @@ namespace Greedy
         }
         Graph MyGraph = new Graph();
         int i = 0;
-        List<MyPictureBox> vertices = new List<MyPictureBox>();
         private void Form1_MouseClick(object sender, MouseEventArgs e)
         {
             i++;
-            //if(e.Button = Button)
-            MyPictureBox vertex = new MyPictureBox();
-            vertex.Location = new Point(e.X - 10, e.Y - 10);
-            int x = vertex.Location.X;
-            int y = vertex.Location.Y;
-            GraphPoint gp = new GraphPoint(x, y);
-            MyGraph.AddPoint(gp);
-            vertex.SizeMode = PictureBoxSizeMode.StretchImage;
-            vertex.ClientSize = new Size(20, 20);
-            vertex.Image = new Bitmap(@"img\button.png");
+            GraphPoint vertex = new GraphPoint(e.X-10, e.Y - 10);
+            MyGraph.AddVertex(vertex);
 
-            vertex.Click += new System.EventHandler(this.picturePoint_click); // += прекрипить к событию
+            vertex.Click += new System.EventHandler(this.picturePoint_click); // += add to event
             this.Controls.Add(vertex);
-            vertices.Add(vertex);
 
-            vertex.number = i;
             DrawNumber(vertex);
-
         }
 
-        private void DrawNumber(MyPictureBox vertex)
+        private void DrawNumber(GraphPoint vertex)
         {
             Graphics g = Graphics.FromImage(vertex.Image);
             g.DrawString(vertex.number.ToString(), new Font("Microsoft Sans Serif", 30), Brushes.Black,
@@ -51,54 +39,85 @@ namespace Greedy
 
         void picturePoint_click(object sender, EventArgs e)
         {
-            var pic = sender as MyPictureBox;
-            if (pic.GetStatus)
+            var pic = sender as GraphPoint;
+            if (pic.status) //Unselect button
             {
                 pic.Image = new Bitmap(@"img\button.png");
-                pic.SetStatus = false;
+                pic.status = false;
                 DrawNumber(pic);
             }
-            else
+            else //Find out if another button was selected and is waiting for connection
             {
-                MyPictureBox pb = vertices.Find(x => x.GetStatus == true);
-                if (pb != null)
+                GraphPoint buttonThatWasFinded = Graph.vertices.Find(x => x.status == true);
+                if (buttonThatWasFinded != null) //if YES then make connection
                 {
                     //Make edge
-                    //
+                    //Random weight
                     Random rand = new Random();
                     int weight = rand.Next(1, 100);
-                    Graphics g = CreateGraphics();
-                    Pen p = new Pen(Brushes.Black);
-                    g.DrawLine(p,pb.Location.X+10, pb.Location.Y+10, pic.Location.X+10, pic.Location.Y+10);
-                    int xMid = Math.Abs((pb.Location.X + 10) - (pic.Location.X + 10)) / 2;
-                    int yMid = Math.Abs((pb.Location.Y + 10) - (pic.Location.Y + 10)) / 2;
-                    Point choosenPoint = new Point();
-                    if (pb.Location.X > pic.Location.X)
-                        choosenPoint.X = pic.Location.X + xMid - 5;
-                    else
-                        choosenPoint.X = pb.Location.X + xMid - 5;
-                    if (pb.Location.Y > pic.Location.Y)
-                        choosenPoint.Y = pic.Location.Y + yMid - 5;
-                    else
-                        choosenPoint.Y = pb.Location.Y + yMid - 5;
-                    g.DrawString(weight.ToString(), new Font("Arial", 8), new SolidBrush(Color.Blue),choosenPoint);
-                    pb.SetStatus = false;
-                    pic.SetStatus = false;
-                    pb.Image = new Bitmap(@"img\button.png");
-                    MyGraph.AddEdge(new GraphPoint(pic.Location.X, pic.Location.Y), new GraphPoint(pb.Location.X, pb.Location.Y),weight);
+                    //Draw Edge and lable weight
+                    DrawEdge(pic, buttonThatWasFinded, weight, Color.Black);
+                    //set default status
+                    buttonThatWasFinded.status = false;
+                    pic.status = false;
+                    buttonThatWasFinded.Image = new Bitmap(@"img\button.png");
+                    //add edge in graph list
+                    MyGraph.AddEdge(new GraphPoint(pic.Location.X, pic.Location.Y), new GraphPoint(buttonThatWasFinded.Location.X, buttonThatWasFinded.Location.Y), weight);
                     DrawNumber(pic);
-                    DrawNumber(pb);
+                    DrawNumber(buttonThatWasFinded);
                 }
-                else
+                else //if NO then denote this button as selected 
                 {
-                    pic.SetStatus = true;
+                    pic.status = true;
                     pic.Image = new Bitmap(@"img\buttonPressed.png");
                     DrawNumber(pic);
                 }
             }
         }
 
+        private void DrawEdge(GraphPoint PointA, GraphPoint PointB, int weight, Color color)
+        {
+            Graphics g = CreateGraphics();
+            Pen p = new Pen(color);
+            g.DrawLine(p, PointB.Location.X + 10, PointB.Location.Y + 10, PointA.Location.X + 10, PointA.Location.Y + 10);
+            //Label weight
+            int xMid = Math.Abs((PointB.Location.X + 10) - (PointA.Location.X + 10)) / 2;
+            int yMid = Math.Abs((PointB.Location.Y + 10) - (PointA.Location.Y + 10)) / 2;
+            Point choosenPoint = new Point();
+            if (PointB.Location.X > PointA.Location.X)
+                choosenPoint.X = PointA.Location.X + xMid - 5;
+            else
+                choosenPoint.X = PointB.Location.X + xMid - 5;
+            if (PointB.Location.Y > PointA.Location.Y)
+                choosenPoint.Y = PointA.Location.Y + yMid - 5;
+            else
+                choosenPoint.Y = PointB.Location.Y + yMid - 5;
+            g.DrawString(weight.ToString(), new Font("Arial", 8), new SolidBrush(Color.Blue), choosenPoint);
+        }
+
         private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //List<GraphPoint> resultPoints = MyGraph.FindPath(1, 7);
+            //if (resultPoints.Count > 1)
+            //{
+            //    for (int i = 0; i < resultPoints.Count - 1; i++)
+            //    {
+            //        Graphics g = CreateGraphics();
+            //        Pen p = new Pen(Brushes.Red);
+            //        g.DrawLine(p, resultPoints[i].X + 10, resultPoints[i].Y + 10,
+            //                    resultPoints[i + 1].X + 10, resultPoints[i + 1].Y + 10);
+            //    }
+            //}
+            //else
+            //    MessageBox.Show("No Way");
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
         {
 
         }
