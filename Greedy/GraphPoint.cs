@@ -12,13 +12,16 @@ namespace Greedy
         public int Y { get; set; }
         public int number { get; set; }
         public bool status { set; get; }
-
+        //CurPoint
+        public bool visitStatus;
+        //
         static private int counter = 0;
         public GraphPoint(int x, int y)
         {
             X = x;
             Y = y;
             status = false;
+            visitStatus = false;
             counter++;
             number = counter;
             this.Location = new System.Drawing.Point(X, Y);

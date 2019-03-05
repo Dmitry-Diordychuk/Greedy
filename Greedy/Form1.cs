@@ -102,19 +102,16 @@ namespace Greedy
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //List<GraphPoint> resultPoints = MyGraph.FindPath(1, 7);
-            //if (resultPoints.Count > 1)
-            //{
-            //    for (int i = 0; i < resultPoints.Count - 1; i++)
-            //    {
-            //        Graphics g = CreateGraphics();
-            //        Pen p = new Pen(Brushes.Red);
-            //        g.DrawLine(p, resultPoints[i].X + 10, resultPoints[i].Y + 10,
-            //                    resultPoints[i + 1].X + 10, resultPoints[i + 1].Y + 10);
-            //    }
-            //}
-            //else
-            //    MessageBox.Show("No Way");
+            List<GraphPoint> resultPoints = MyGraph.FindPath(1, 4);
+            if (resultPoints.Count > 1)
+            {
+                for (int i = 0; i < resultPoints.Count - 1; i++)
+                {
+                    DrawEdge(resultPoints[i], resultPoints[i + 1], 0, Color.Black);
+                }
+            }
+            else
+                MessageBox.Show("No Way");
         }
 
         private void Form1_Load(object sender, EventArgs e)
