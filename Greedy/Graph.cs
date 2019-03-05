@@ -18,18 +18,44 @@ namespace Greedy
         {
             List<GraphPoint> result = new List<GraphPoint>();
             CurrentGraphPoint curPoint = new CurrentGraphPoint(a);
-            int nextPointNumberLeft, nextPointNumberRight;
-            while (curPoint.number != b)
+            int nextPointNumberLeft = -1, nextPointNumberRight = -1;
+            while (true)
             {
                 result.Add(curPoint);
-                nextPointNumberLeft = curPoint.pathsFromCurrentPoint.OrderByDescending(edge => edge.Item3).FirstOrDefault(edge => edge.Item1.visitStatus == false || edge.Item2.visitStatus == false).Item1.number;
-                nextPointNumberRight = curPoint.pathsFromCurrentPoint.OrderByDescending(edge => edge.Item3).FirstOrDefault(edge => edge.Item1.visitStatus == false || edge.Item2.visitStatus == false).Item2.number;
-                if (curPoint.number == nextPointNumberLeft)
-                    curPoint = new CurrentGraphPoint(nextPointNumberLeft);
-                else if (curPoint.number == nextPointNumberRight)
-                    curPoint = new CurrentGraphPoint(nextPointNumberRight);
-                else if (nextPointNumberLeft == 0 && nextPointNumberRight == 0)
+                if (curPoint.number != b)
+                {
+                    try
+                    {
+                        nextPointNumberLeft = curPoint.pathsFromCurrentPoint.OrderByDescending(edge => edge.Item3).FirstOrDefault(edge => edge.Item1.visitStatus == false || edge.Item2.visitStatus == false).Item1.number;
+                    }
+                    catch 
+                    {
+                        nextPointNumberLeft = 0;
+                    }
+                    try
+                    {
+                        nextPointNumberRight = curPoint.pathsFromCurrentPoint.OrderByDescending(edge => edge.Item3).FirstOrDefault(edge => edge.Item1.visitStatus == false || edge.Item2.visitStatus == false).Item2.number;
+                    }
+                    catch
+                    {
+                        nextPointNumberRight = 0;
+                    }
+                }
+                if (curPoint.number == b)
+                {
+                    result.Add(curPoint);
                     break;
+                }
+                else if (curPoint.number == nextPointNumberLeft)
+                    curPoint = new CurrentGraphPoint(nextPointNumberRight);
+                else if (curPoint.number == nextPointNumberRight)
+                    curPoint = new CurrentGraphPoint(nextPointNumberLeft);
+                else if (nextPointNumberLeft == 0 && nextPointNumberRight == 0)
+                {
+                    result.Clear();
+                    break;
+                }   
+                   
             }
             return result;
         } 

@@ -8,22 +8,17 @@ namespace Greedy
 {
     class CurrentGraphPoint : GraphPoint
     {
-        private static int curY { get; set; }
-        private static int curX { get; set; }
         public List<(GraphPoint, GraphPoint, int)> pathsFromCurrentPoint { get; set; }
-        public List<GraphPoint> reachablePointsList { get; set; }
+        //public List<GraphPoint> reachablePointsList { get; set; }
 
-        public CurrentGraphPoint(int x, int y) : base(x, y)
+        public CurrentGraphPoint(int n)
         {
-        }
-
-        public CurrentGraphPoint(int n) : base (curX,curY)
-        {
-            curX = Graph.vertices[n + 1].X;
-            curY = Graph.vertices[n + 1].Y;
-            visitStatus = true;
-            number = n;
-            pathsFromCurrentPoint = Graph.graphEdges.FindAll(x => x.Item1.number == this.number && x.Item2.number == this.number);
+            GraphPoint currentVertex = Graph.vertices.Find(point => point.number == n);
+            X = currentVertex.X;
+            Y = currentVertex.Y;
+            currentVertex.visitStatus = true;
+            number = currentVertex.number;
+            pathsFromCurrentPoint = Graph.graphEdges.FindAll(edge => edge.Item1.number == currentVertex.number || edge.Item2.number == currentVertex.number);
             //FindReacheblePointsList();
 
             //this.Location = new System.Drawing.Point(X, Y);

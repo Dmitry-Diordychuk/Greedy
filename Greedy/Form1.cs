@@ -21,7 +21,7 @@ namespace Greedy
         private void Form1_MouseClick(object sender, MouseEventArgs e)
         {
             i++;
-            GraphPoint vertex = new GraphPoint(e.X-10, e.Y - 10);
+            GraphPoint vertex = new GraphPoint(e.X-10, e.Y - 10,i);
             MyGraph.AddVertex(vertex);
 
             vertex.Click += new System.EventHandler(this.picturePoint_click); // += add to event
@@ -62,7 +62,8 @@ namespace Greedy
                     pic.status = false;
                     buttonThatWasFinded.Image = new Bitmap(@"img\button.png");
                     //add edge in graph list
-                    MyGraph.AddEdge(new GraphPoint(pic.Location.X, pic.Location.Y), new GraphPoint(buttonThatWasFinded.Location.X, buttonThatWasFinded.Location.Y), weight);
+                    
+                    MyGraph.AddEdge(pic, buttonThatWasFinded, weight);
                     DrawNumber(pic);
                     DrawNumber(buttonThatWasFinded);
                 }
@@ -79,20 +80,23 @@ namespace Greedy
         {
             Graphics g = CreateGraphics();
             Pen p = new Pen(color);
-            g.DrawLine(p, PointB.Location.X + 10, PointB.Location.Y + 10, PointA.Location.X + 10, PointA.Location.Y + 10);
+            g.DrawLine(p, PointB.X + 10, PointB.Y + 10, PointA.X + 10, PointA.Y + 10);
             //Label weight
-            int xMid = Math.Abs((PointB.Location.X + 10) - (PointA.Location.X + 10)) / 2;
-            int yMid = Math.Abs((PointB.Location.Y + 10) - (PointA.Location.Y + 10)) / 2;
-            Point choosenPoint = new Point();
-            if (PointB.Location.X > PointA.Location.X)
-                choosenPoint.X = PointA.Location.X + xMid - 5;
-            else
-                choosenPoint.X = PointB.Location.X + xMid - 5;
-            if (PointB.Location.Y > PointA.Location.Y)
-                choosenPoint.Y = PointA.Location.Y + yMid - 5;
-            else
-                choosenPoint.Y = PointB.Location.Y + yMid - 5;
-            g.DrawString(weight.ToString(), new Font("Arial", 8), new SolidBrush(Color.Blue), choosenPoint);
+            if (weight != -1)
+            {
+                int xMid = Math.Abs((PointB.X + 10) - (PointA.X + 10)) / 2;
+                int yMid = Math.Abs((PointB.Y + 10) - (PointA.Y + 10)) / 2;
+                Point choosenPoint = new Point();
+                if (PointB.X > PointA.X)
+                    choosenPoint.X = PointA.X + xMid - 5;
+                else
+                    choosenPoint.X = PointB.X + xMid - 5;
+                if (PointB.Y > PointA.Y)
+                    choosenPoint.Y = PointA.Y + yMid - 5;
+                else
+                    choosenPoint.Y = PointB.Y + yMid - 5;
+                g.DrawString(weight.ToString(), new Font("Arial", 8), new SolidBrush(Color.Blue), choosenPoint);
+            }
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
@@ -107,7 +111,7 @@ namespace Greedy
             {
                 for (int i = 0; i < resultPoints.Count - 1; i++)
                 {
-                    DrawEdge(resultPoints[i], resultPoints[i + 1], 0, Color.Black);
+                    DrawEdge(resultPoints[i], resultPoints[i + 1], -1, Color.Red);
                 }
             }
             else

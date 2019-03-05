@@ -15,19 +15,23 @@ namespace Greedy
         //CurPoint
         public bool visitStatus;
         //
-        static private int counter = 0;
+        public GraphPoint() { }
+
         public GraphPoint(int x, int y)
         {
             X = x;
             Y = y;
             status = false;
             visitStatus = false;
-            counter++;
-            number = counter;
+            number = -1;
             this.Location = new System.Drawing.Point(X, Y);
             this.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.ClientSize = new System.Drawing.Size(20, 20);
             this.Image = new System.Drawing.Bitmap(@"img\button.png");
+        }
+        public GraphPoint(int x, int y, int n) : this (x,y)
+        {
+            number = n;
         }
     }
 }
