@@ -16,6 +16,7 @@ namespace Greedy
         //Algorithm
         public List<GraphPoint> FindPath(int a, int b)
         {
+
             List<GraphPoint> result = new List<GraphPoint>();
             CurrentGraphPoint curPoint = new CurrentGraphPoint(a);
             int nextPointNumberLeft = -1, nextPointNumberRight = -1;

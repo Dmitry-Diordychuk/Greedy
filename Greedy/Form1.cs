@@ -106,16 +106,25 @@ namespace Greedy
 
         private void button1_Click(object sender, EventArgs e)
         {
-            List<GraphPoint> resultPoints = MyGraph.FindPath(1, 4);
-            if (resultPoints.Count > 1)
-            {
-                for (int i = 0; i < resultPoints.Count - 1; i++)
-                {
-                    DrawEdge(resultPoints[i], resultPoints[i + 1], -1, Color.Red);
-                }
-            }
+            int a=0, b=0;
+            List<GraphPoint> resultPoints = null;
+            if (int.TryParse(textBox1.Text, out a) && int.TryParse(textBox2.Text, out b))
+                resultPoints = MyGraph.FindPath(a, b);
             else
-                MessageBox.Show("No Way");
+                MessageBox.Show("Wrong input, try again");
+
+            if (resultPoints != null)
+            {
+                if (resultPoints.Count > 1)
+                {
+                    for (int i = 0; i < resultPoints.Count - 1; i++)
+                    {
+                        DrawEdge(resultPoints[i], resultPoints[i + 1], -1, Color.Red);
+                    }
+                }
+                else
+                    MessageBox.Show("There is no path");
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
