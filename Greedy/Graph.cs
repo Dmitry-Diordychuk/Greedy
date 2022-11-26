@@ -8,26 +8,31 @@ namespace Greedy
 {
     class Graph
     {
-        static public List<GraphPoint> vertices { get; } = new List<GraphPoint>();
-        static public List<(GraphPoint, GraphPoint, int)> graphEdges { get; } = new List<(GraphPoint, GraphPoint, int)>();
-        //Methods
-        public void AddVertex(GraphPoint p) => vertices.Add(p);
-        public void AddEdge(GraphPoint p1, GraphPoint p2, int weight) => graphEdges.Add((p1, p2, weight));
-        //Algorithm
-        public List<GraphPoint> FindPath(int a, int b)
+        public static List<Point> Vertices { get; } = new();
+        public static List<(Point, Point, int)> graphEdges { get; } = new();
+
+        public void AddVertex(Point p) => Vertices.Add(p);
+        public void AddEdge(Point p1, Point p2, int weight) => graphEdges.Add((p1, p2, weight));
+
+        public List<Point> FindPath(int a, int b)
         {
 
-            List<GraphPoint> result = new List<GraphPoint>();
-            CurrentGraphPoint curPoint = new CurrentGraphPoint(a);
+            List<Point> result = new List<Point>();
+            CurrentPoint currentPoint = new CurrentPoint(a);
             int nextPointNumberLeft = -1, nextPointNumberRight = -1;
+            
             while (true)
             {
-                result.Add(curPoint);
-                if (curPoint.number != b)
+                result.Add(currentPoint);
+                if (currentPoint.number != b)
                 {
                     try
                     {
-                        nextPointNumberLeft = curPoint.pathsFromCurrentPoint.OrderByDescending(edge => edge.Item3).FirstOrDefault(edge => edge.Item1.visitStatus == false || edge.Item2.visitStatus == false).Item1.number;
+                        nextPointNumberLeft = currentPoint.pathsFromCurrentPoint
+                                                        .OrderByDescending(edge => edge.Item3)
+                                                        .FirstOrDefault(edge => edge.Item1.visitStatus == false 
+                                                                                        || edge.Item2.visitStatus == false)
+                                                        .Item1.number;
                     }
                     catch 
                     {
@@ -35,22 +40,26 @@ namespace Greedy
                     }
                     try
                     {
-                        nextPointNumberRight = curPoint.pathsFromCurrentPoint.OrderByDescending(edge => edge.Item3).FirstOrDefault(edge => edge.Item1.visitStatus == false || edge.Item2.visitStatus == false).Item2.number;
+                        nextPointNumberRight = currentPoint.pathsFromCurrentPoint
+                                                        .OrderByDescending(edge => edge.Item3)
+                                                        .FirstOrDefault(edge => edge.Item1.visitStatus == false 
+                                                                                        || edge.Item2.visitStatus == false)
+                                                        .Item2.number;
                     }
                     catch
                     {
                         nextPointNumberRight = 0;
                     }
                 }
-                if (curPoint.number == b)
+                if (currentPoint.number == b)
                 {
-                    result.Add(curPoint);
+                    result.Add(currentPoint);
                     break;
                 }
-                else if (curPoint.number == nextPointNumberLeft)
-                    curPoint = new CurrentGraphPoint(nextPointNumberRight);
-                else if (curPoint.number == nextPointNumberRight)
-                    curPoint = new CurrentGraphPoint(nextPointNumberLeft);
+                if (currentPoint.number == nextPointNumberLeft)
+                    currentPoint = new CurrentPoint(nextPointNumberRight);
+                else if (currentPoint.number == nextPointNumberRight)
+                    currentPoint = new CurrentPoint(nextPointNumberLeft);
                 else if (nextPointNumberLeft == 0 && nextPointNumberRight == 0)
                 {
                     result.Clear();

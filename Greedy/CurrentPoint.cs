@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Greedy
 {
-    class CurrentGraphPoint : GraphPoint
+    class CurrentPoint : Point
     {
-        public List<(GraphPoint, GraphPoint, int)> pathsFromCurrentPoint { get; set; }
+        public List<(Point, Point, int)> pathsFromCurrentPoint { get; set; }
         //public List<GraphPoint> reachablePointsList { get; set; }
 
-        public CurrentGraphPoint(int n)
+        public CurrentPoint(int n)
         {
-            GraphPoint currentVertex = Graph.vertices.Find(point => point.number == n);
+            Point currentVertex = Graph.Vertices.Find(point => point.number == n);
             X = currentVertex.X;
             Y = currentVertex.Y;
             currentVertex.visitStatus = true;
