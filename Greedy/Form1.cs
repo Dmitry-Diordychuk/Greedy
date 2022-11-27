@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Greedy
@@ -14,6 +9,8 @@ namespace Greedy
     {
         private readonly Graph _graph = new();
         private int _counter;
+        private VertexView _prevView;
+        private Random _rand = new Random();
         
         public Form1()
         {
@@ -23,97 +20,99 @@ namespace Greedy
         private void Form1_MouseClick(object sender, MouseEventArgs e)
         {
             _counter++;
-            Point vertex = new Point(e.X-10, e.Y - 10,_counter);
+            Vertex vertex = new Vertex { Id = _counter };
             _graph.AddVertex(vertex);
 
-            vertex.Click += picturePoint_click;
-            Controls.Add(vertex);
-
-            DrawNumber(vertex);
+            VertexView vertexView = new VertexView(e.X, e.Y, _counter);
+            vertexView.Click += picturePoint_click;
+            
+            Controls.Add(vertexView);
+            DrawId(vertexView);
         }
-
-        private void DrawNumber(Point vertex)
-        {
-            Graphics g = Graphics.FromImage(vertex.Image);
-            g.DrawString(vertex.number.ToString(), new Font("Microsoft Sans Serif", 30), Brushes.Black,
-                new System.Drawing.Point(80, 80));
-        }
+        
+        private void Form1_Load(object sender, EventArgs e) {}
+        
+        private void Form1_Paint(object sender, PaintEventArgs e) {}
 
         void picturePoint_click(object sender, EventArgs e)
         {
-            var picture = sender as Point;
-            if (picture is { status: true }) //Unselect button
+            if (sender is not VertexView view)
             {
-                picture.Image = new Bitmap(@"img\point.png");
-                picture.status = false;
-                DrawNumber(picture);
+                return;
             }
-            else //Find out if another button was selected and is waiting for connection
+
+            if (_prevView == null)
             {
-                Point buttonThatWasFinded = Graph.Vertices.Find(x => x.status == true);
-                if (buttonThatWasFinded != null) //if YES then make connection
-                {
-                    //Make edge
-                    //Random weight
-                    Random rand = new Random();
-                    int weight = rand.Next(1, 100);
-                    //Draw Edge and lable weight
-                    DrawEdge(picture, buttonThatWasFinded, weight, Color.Black);
-                    //set default status
-                    buttonThatWasFinded.status = false;
-                    picture.status = false;
-                    buttonThatWasFinded.Image = new Bitmap(@"img\point.png");
-                    //add edge in graph list
-                    
-                    _graph.AddEdge(picture, buttonThatWasFinded, weight);
-                    DrawNumber(picture);
-                    DrawNumber(buttonThatWasFinded);
-                }
-                else //if NO then denote this button as selected 
-                {
-                    picture.status = true;
-                    picture.Image = new Bitmap(@"img\pointSelected.png");
-                    DrawNumber(picture);
-                }
+                view.SetSelected(true);
+                _prevView = view;
+                return;
             }
+
+            Vertex currVertex = _graph.FindVertex(view.Id);
+            Vertex prevVertex = _graph.FindVertex(_prevView.Id);
+            
+            int randomWeight = _rand.Next(1, 100);
+            _graph.AddEdge(currVertex, prevVertex, randomWeight);
+            
+            DrawEdge(view, _prevView, randomWeight, Color.Black);
+            DrawId(view);
+            DrawId(_prevView);
+            
+            _prevView.SetSelected(false);
+
+            _prevView = null;
+        }
+        
+        private void DrawId(VertexView view)
+        {
+            Graphics graphics = CreateGraphics();
+            graphics.DrawString(
+                view.Id.ToString(),
+                new Font("Microsoft Sans Serif", 12),
+                Brushes.Red,
+                new Point((int)(view.X + view.Width / 1.2f), (int)(view.Y + view.Height / 1.2f))
+            );
         }
 
-        private void DrawEdge(Point PointA, Point PointB, int weight, Color color)
+        private void DrawEdge(VertexView vA, VertexView vB, int weight, Color color)
         {
             Graphics g = CreateGraphics();
             Pen p = new Pen(color);
-            g.DrawLine(p, PointB.X + 10, PointB.Y + 10, PointA.X + 10, PointA.Y + 10);
-            //Label weight
+            int vAOffsetX = vA.Width / 2;
+            int vAOffsetY = vA.Height / 2;
+            int vBOffsetX = vB.Width / 2;
+            int vBOffsetY = vB.Height / 2;
+
+            g.DrawLine(p, vB.X + vBOffsetX, vB.Y + vBOffsetY, vA.X + vAOffsetX, vA.Y + vAOffsetY);
+
             if (weight != -1)
             {
-                int xMid = Math.Abs((PointB.X + 10) - (PointA.X + 10)) / 2;
-                int yMid = Math.Abs((PointB.Y + 10) - (PointA.Y + 10)) / 2;
-                System.Drawing.Point choosenPoint = new System.Drawing.Point();
-                if (PointB.X > PointA.X)
-                    choosenPoint.X = PointA.X + xMid - 5;
+                int xMid = Math.Abs((vB.X + 10) - (vA.X + 10)) / 2;
+                int yMid = Math.Abs((vB.Y + 10) - (vA.Y + 10)) / 2;
+                Point chosenPoint = new Point();
+                if (vB.X > vA.X)
+                    chosenPoint.X = vA.X + xMid - 5;
                 else
-                    choosenPoint.X = PointB.X + xMid - 5;
-                if (PointB.Y > PointA.Y)
-                    choosenPoint.Y = PointA.Y + yMid - 5;
+                    chosenPoint.X = vB.X + xMid - 5;
+                if (vB.Y > vA.Y)
+                    chosenPoint.Y = vA.Y + yMid - 5;
                 else
-                    choosenPoint.Y = PointB.Y + yMid - 5;
-                g.DrawString(weight.ToString(), new Font("Arial", 8), new SolidBrush(Color.Blue), choosenPoint);
+                    chosenPoint.Y = vB.Y + yMid - 5;
+                g.DrawString(weight.ToString(), new Font("Arial", 8), new SolidBrush(Color.Blue), chosenPoint);
             }
-        }
-
-        private void Form1_Paint(object sender, PaintEventArgs e)
-        {
-
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            int a=0, b=0;
-            List<Point> resultPoints = null;
-            if (int.TryParse(textBox1.Text, out a) && int.TryParse(textBox2.Text, out b))
+            List<Vertex> resultPoints = null;
+            if (int.TryParse(textBox1.Text, out int a) && int.TryParse(textBox2.Text, out int b))
+            {
                 resultPoints = _graph.FindPath(a, b);
+            }
             else
+            {
                 MessageBox.Show("Wrong input, try again");
+            }
 
             if (resultPoints != null)
             {
@@ -121,17 +120,15 @@ namespace Greedy
                 {
                     for (int i = 0; i < resultPoints.Count - 1; i++)
                     {
-                        DrawEdge(resultPoints[i], resultPoints[i + 1], -1, Color.Red);
+                        Control[] controlsA = Controls.Find(resultPoints[i].Id.ToString(), false);
+                        Control[] controlsB = Controls.Find(resultPoints[i + 1].Id.ToString(), false);
+                        
+                        DrawEdge((VertexView)controlsA[0], (VertexView)controlsB[0], -1, Color.Red);
                     }
                 }
                 else
                     MessageBox.Show("There is no path");
             }
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
         }
     }
 }

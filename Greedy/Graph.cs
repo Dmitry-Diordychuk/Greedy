@@ -8,31 +8,34 @@ namespace Greedy
 {
     class Graph
     {
-        public static List<Point> Vertices { get; } = new();
-        public static List<(Point, Point, int)> graphEdges { get; } = new();
+        public static List<Vertex> Vertices { get; } = new();
+        public static List<(Vertex, Vertex, int)> graphEdges { get; } = new();
 
-        public void AddVertex(Point p) => Vertices.Add(p);
-        public void AddEdge(Point p1, Point p2, int weight) => graphEdges.Add((p1, p2, weight));
+        public void AddVertex(Vertex vertex) => Vertices.Add(vertex);
 
-        public List<Point> FindPath(int a, int b)
+        public Vertex FindVertex(int id) => Vertices.Find(v => v.Id == id);
+        
+        public void AddEdge(Vertex p1, Vertex p2, int weight) => graphEdges.Add((p1, p2, weight));
+
+        public List<Vertex> FindPath(int a, int b)
         {
 
-            List<Point> result = new List<Point>();
-            CurrentPoint currentPoint = new CurrentPoint(a);
+            List<Vertex> result = new List<Vertex>();
+            CurrentVertex currentVertex = new CurrentVertex(a);
             int nextPointNumberLeft = -1, nextPointNumberRight = -1;
-            
+
             while (true)
             {
-                result.Add(currentPoint);
-                if (currentPoint.number != b)
+                result.Add(currentVertex);
+                if (currentVertex.Id != b)
                 {
                     try
                     {
-                        nextPointNumberLeft = currentPoint.pathsFromCurrentPoint
+                        nextPointNumberLeft = currentVertex.pathsFromCurrentPoint
                                                         .OrderByDescending(edge => edge.Item3)
-                                                        .FirstOrDefault(edge => edge.Item1.visitStatus == false 
-                                                                                        || edge.Item2.visitStatus == false)
-                                                        .Item1.number;
+                                                        .FirstOrDefault(edge => edge.Item1.VisitStatus == false 
+                                                                                        || edge.Item2.VisitStatus == false)
+                                                        .Item1.Id;
                     }
                     catch 
                     {
@@ -40,26 +43,26 @@ namespace Greedy
                     }
                     try
                     {
-                        nextPointNumberRight = currentPoint.pathsFromCurrentPoint
+                        nextPointNumberRight = currentVertex.pathsFromCurrentPoint
                                                         .OrderByDescending(edge => edge.Item3)
-                                                        .FirstOrDefault(edge => edge.Item1.visitStatus == false 
-                                                                                        || edge.Item2.visitStatus == false)
-                                                        .Item2.number;
+                                                        .FirstOrDefault(edge => edge.Item1.VisitStatus == false 
+                                                                                        || edge.Item2.VisitStatus == false)
+                                                        .Item2.Id;
                     }
                     catch
                     {
                         nextPointNumberRight = 0;
                     }
                 }
-                if (currentPoint.number == b)
+                if (currentVertex.Id == b)
                 {
-                    result.Add(currentPoint);
+                    result.Add(currentVertex);
                     break;
                 }
-                if (currentPoint.number == nextPointNumberLeft)
-                    currentPoint = new CurrentPoint(nextPointNumberRight);
-                else if (currentPoint.number == nextPointNumberRight)
-                    currentPoint = new CurrentPoint(nextPointNumberLeft);
+                if (currentVertex.Id == nextPointNumberLeft)
+                    currentVertex = new CurrentVertex(nextPointNumberRight);
+                else if (currentVertex.Id == nextPointNumberRight)
+                    currentVertex = new CurrentVertex(nextPointNumberLeft);
                 else if (nextPointNumberLeft == 0 && nextPointNumberRight == 0)
                 {
                     result.Clear();
